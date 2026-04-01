@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driving Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #0a0e27;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #startScreen {
+            background: linear-gradient(145deg, #1a1f3a 0%, #0f1428 100%);
+            padding: 50px 60px;
+            border-radius: 25px;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.6);
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        h1 {
+            font-size: 3em;
+            color: #e8f0ff;
+            margin-bottom: 50px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 8px;
+            text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+        }
+        .input-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+            color: #94a3b8;
+            font-weight: normal;
+        }
+        input[type="text"], select {
+            width: 100%;
+            padding: 14px 18px;
+            font-size: 1em;
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 12px;
+            transition: all 0.3s;
+            background: rgba(15, 23, 42, 0.6);
+            color: #e8f0ff;
+        }
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: rgba(15, 23, 42, 0.8);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+        }
+        input[type="text"]::placeholder {
+            color: #64748b;
+        }
+        select {
+            cursor: pointer;
+            background: rgba(15, 23, 42, 0.6);
+            color: #e8f0ff;
+        }
+        select option {
+            background: #1a1f3a;
+        }
+        .color-select-label {
+            margin-top: 30px;
+            margin-bottom: 15px;
+            color: #94a3b8;
+            font-size: 0.95em;
+        }
+        .color-options-inline {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        .color-option-inline {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .color-option-inline:hover {
+            transform: scale(1.15);
+            border-color: rgba(255,255,255,0.4);
+        }
+        .color-option-inline.selected {
+            border-color: #3b82f6;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
+        }
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 35px;
+            gap: 15px;
+        }
+        button {
+            padding: 16px 38px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.4);
+        }
+        #exitBtn {
+            background: #ef4444;
+            color: white;
+            flex: 1;
+        }
+        #exitBtn:hover {
+            background: #dc2626;
+            box-shadow: 0 12px 25px rgba(239, 68, 68, 0.4);
+        }
+        #startBtn {
+            background: #3b82f6;
+            color: white;
+            flex: 1;
+        }
+        #startBtn:hover {
+            background: #2563eb;
+            box-shadow: 0 12px 25px rgba(59, 130, 246, 0.4);
+        }
+        .subtitle {
+            color: #64748b;
+            font-size: 0.85em;
+            margin-top: 25px;
+            font-style: italic;
+        }
+        #gameScreen {
+            display: none;
+            position: relative;
+        }
+        #gameCanvas {
+            background: #2c3e50;
+            display: block;
+            border: 3px solid white;
+            border-radius: 10px;
+        }
+        #stats {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 0.9em;
+            font-family: monospace;
+        }
+        #playerNameDisplay {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+        }
+        #restartHint {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.7em;
+            font-family: monospace;
+        }
+        #homeHint {
+            position: absolute;
+            top: 38px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.7em;
+            font-family: monospace;
+        }
+        #speedBoost {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3em;
+            font-weight: bold;
+            color: #2ecc71;
+            text-shadow: 0 0 20px rgba(46, 204, 113, 0.8);
+            pointer-events: none;
+            opacity: 0;
+            z-index: 100;
+        }
+        @keyframes popUp {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+            50% {
+                opacity: 1;
+                transform: translate(-50%, -80%) scale(1.2);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -120%) scale(1);
+            }
+        }
+        #gameOver {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.95);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            border: 3px solid #e74c3c;
+        }
+        #gameOver h2 {
+            font-size: 2.5em;
+            color: #e74c3c;
+            margin-bottom: 20px;
+        }
+        #gameOver p {
+            font-size: 1.3em;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="startScreen">
+        <h1>ℍ𝕀𝔾ℍ𝕎𝔸𝕐 𝔼𝕊ℂ𝔸ℙ𝔼</h1>
+        <div class="input-group">
+            <label for="playerName">Player Name...</label>
+            <input type="text" id="playerName" placeholder="Player Name...">
+        </div>
+        <div class="input-group">
+            <label for="difficulty">Difficulty Level...</label>
+            <select id="difficulty">
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+            </select>
+        </div>
+        <div class="color-select-label">Choose Car Color...</div>
+        <div class="color-options-inline">
+            <div class="color-option-inline selected" style="background: #e74c3c;" data-color="#e74c3c"></div>
+            <div class="color-option-inline" style="background: #3498db;" data-color="#3498db"></div>
+            <div class="color-option-inline" style="background: #2ecc71;" data-color="#2ecc71"></div>
+            <div class="color-option-inline" style="background: #f39c12;" data-color="#f39c12"></div>
+            <div class="color-option-inline" style="background: #9b59b6;" data-color="#9b59b6"></div>
+        </div>
+        <div class="button-group">
+            <button id="exitBtn">𝐄𝐗𝐈𝐓</button>
+            <button id="startBtn">𝐒𝐓𝐀𝐑𝐓</button>
+        </div>
+        <div class="subtitle">'Arrows ← → for move in lines'</div>
+    </div>
+
+    <div id="gameScreen">
+        <canvas id="gameCanvas" width="600" height="800"></canvas>
+        <div id="restartHint">Press 'LCtrl'  for restart</div>
+        <div id="homeHint">Press 'Tab' for Home Screen</div>
+        <div id="speedBoost"></div>
+        <div id="stats">
+            <div id="playerNameDisplay"></div>
+            <div>Speed:<span id="speed">0</span> km/h</div>
+            <div>Distance:<span id="distance">0</span> m</div>
+            <div>Time:<span id="time">0:00</span></div>
+        </div>
+        <div id="gameOver">
+            <h2>Caused Accident!</h2>
+            <p>Passing: <span id="finalDistance"></span> meters</p>
+            <p>Time: <span id="finalTime"></span></p>
+            <p style="margin-top: 30px; font-size: 1.1em;">Press SPACE for restart</p>
+        </div>
+    </div>
+
+    <script>
+        const startScreen = document.getElementById('startScreen');
+        const gameScreen = document.getElementById('gameScreen');
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const gameOverDiv = document.getElementById('gameOver');
+
+        let playerName = '';
+        let difficulty = 'easy';
+        let carColor = '#e74c3c';
+        let gameRunning = false;
+        let speed = 0;
+        let distance = 0;
+        let startTime = 0;
+        let currentTime = 0;
+        let lastSpeedIncrease = 0;
+        let roadOffset = 0;
+        let animationFrameId = null;
+        let coins = 0;
+
+        let player = { x: 250, y: 650, width: 50, height: 80, lane: 1 };
+        let obstacles = [];
+        let coinObjects = [];
+        let keys = {};
+        let bushes = [];
+
+        const lanePositions = [150, 275, 400];
+        
+        const difficultySettings = {
+            easy: { initialSpeed: 10, speedIncrease: 3, increaseInterval: 100 },
+            medium: { initialSpeed: 20, speedIncrease: 5, increaseInterval: 200 },
+            hard: { initialSpeed: 35, speedIncrease: 10, increaseInterval: 200 }
+        };
+
+        // Color selection
+        document.querySelectorAll('.color-option-inline').forEach(option => {
+            option.addEventListener('click', (e) => {
+                document.querySelectorAll('.color-option-inline').forEach(opt => opt.classList.remove('selected'));
+                e.target.classList.add('selected');
+                carColor = e.target.dataset.color;
+            });
+        });
+
+        document.getElementById('exitBtn').addEventListener('click', () => {
+            startScreen.style.display = 'none';
+            document.body.innerHTML = `
+                <div style="
+                    display: flex; 
+                    justify-content: center; 
+                    align-items: center; 
+                    height: 100vh; 
+                    background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #e74c3c 100%);
+                    background-size: 400% 400%;
+                    animation: gradientShift 5s ease infinite;
+                    flex-direction: column;
+                    padding: 20px;
+                    position: relative;
+                    overflow: hidden;
+                ">
+                    <div class="stars"></div>
+                    <h1 style="
+                        color: #ffffff; 
+                        font-size: 2.8em; 
+                        font-weight: bold;
+                        text-transform: uppercase;
+                        letter-spacing: 8px;
+                        text-shadow: 
+                            0 0 10px rgba(239, 68, 68, 1),
+                            0 0 20px rgba(239, 68, 68, 0.8),
+                            0 0 30px rgba(239, 68, 68, 0.6),
+                            0 0 40px rgba(239, 68, 68, 0.4),
+                            0 0 70px rgba(239, 68, 68, 0.2);
+                        animation: neonPulse 1.5s ease-in-out infinite, floatText 3s ease-in-out infinite;
+                        margin: 0;
+                        text-align: center;
+                        line-height: 1.5;
+                        position: relative;
+                        z-index: 10;
+                    ">
+                        ΥΟU LEFT<br>FROM THE GAME!!
+                    </h1>
+                    <p style="
+                        color: #e8f0ff;
+                        font-size: 1.4em;
+                        margin-top: 40px;
+                        text-align: center;
+                        animation: fadeInUp 2s ease;
+                        text-shadow: 0 0 10px rgba(232, 240, 255, 0.5);
+                        position: relative;
+                        z-index: 10;
+                    ">
+                                             </p>
+                    <div style="
+                        margin-top: 30;
+                        font-size: 3em;
+                        animation: rotate 3s linear infinite;
+                        position: relative;
+                        z-index: 100;
+                    ">🏁</div>
+                </div>
+                <style>
+                    @keyframes gradientShift {
+                        0% { background-position: 0% 50%; }
+                        50% { background-position: 100% 50%; }
+                        100% { background-position: 0% 50%; }
+                    }
+                    
+                    @keyframes neonPulse {
+                        0%, 100% { 
+                            opacity: 1; 
+                            transform: scale(1);
+                            text-shadow: 
+                                0 0 10px rgba(239, 68, 68, 1),
+                                0 0 20px rgba(239, 68, 68, 0.8),
+                                0 0 30px rgba(239, 68, 68, 0.6),
+                                0 0 40px rgba(239, 68, 68, 0.4),
+                                0 0 70px rgba(239, 68, 68, 0.2);
+                        }
+                        50% { 
+                            opacity: 0.9; 
+                            transform: scale(1.08);
+                            text-shadow: 
+                                0 0 20px rgba(239, 68, 68, 1),
+                                0 0 30px rgba(239, 68, 68, 1),
+                                0 0 40px rgba(239, 68, 68, 0.8),
+                                0 0 50px rgba(239, 68, 68, 0.6),
+                                0 0 100px rgba(239, 68, 68, 0.4);
+                        }
+                    }
+                    
+                    @keyframes floatText {
+                        0%, 100% { transform: translateY(0px); }
+                        50% { transform: translateY(-20px); }
+                    }
+                    
+                    @keyframes fadeInUp {
+                        0% { opacity: 0; transform: translateY(30px); }
+                        100% { opacity: 1; transform: translateY(0); }
+                    }
+                    
+                    @keyframes rotate {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                    
+                    .stars {
+                        position: absolute;
+                        width: 100%;
+                        height: 100%;
+                        background-image: 
+                            radial-gradient(2px 2px at 20px 30px, white, transparent),
+                            radial-gradient(2px 2px at 60px 70px, white, transparent),
+                            radial-gradient(1px 1px at 50px 50px, white, transparent),
+                            radial-gradient(1px 1px at 130px 80px, white, transparent),
+                            radial-gradient(2px 2px at 90px 10px, white, transparent);
+                        background-repeat: repeat;
+                        background-size: 200px 200px;
+                        animation: twinkle 3s ease-in-out infinite;
+                        opacity: 0.5;
+                    }
+                    
+                    @keyframes twinkle {
+                        0%, 100% { opacity: 0.3; }
+                        50% { opacity: 0.6; }
+                    }
+                </style>
+            `;
+        });
+
+        document.getElementById('startBtn').addEventListener('click', () => {
+            playerName = document.getElementById('playerName').value || 'Player:';
+            difficulty = document.getElementById('difficulty').value;
+            startScreen.style.display = 'none';
+            gameScreen.style.display = 'block';
+            document.getElementById('playerNameDisplay').textContent = playerName;
+            startGame();
+        });
+
+        function startGame() {
+            // Σταματάμε οποιοδήποτε προηγούμενο animation frame
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+            
+            gameRunning = true;
+            speed = difficultySettings[difficulty].initialSpeed;
+            distance = 0;
+            lastSpeedIncrease = 0;
+            roadOffset = 0;
+            startTime = Date.now();
+            obstacles = [];
+            bushes = [];
+            player.x = lanePositions[1];
+            player.lane = 1;
+            gameOverDiv.style.display = 'none';
+            
+            // Δημιουργία θάμνων
+            for (let i = 0; i < 15; i++) {
+                bushes.push({
+                    x: 40 + Math.random() * 40,
+                    y: i * 60 - 100,
+                    size: 20 + Math.random() * 15,
+                    side: 'left'
+                });
+                bushes.push({
+                    x: 520 + Math.random() * 40,
+                    y: i * 60 - 100,
+                    size: 20 + Math.random() * 15,
+                    side: 'right'
+                });
+            }
+            
+            gameLoop();
+        }
+
+        function showSpeedBoost(amount) {
+            const boostDiv = document.getElementById('speedBoost');
+            boostDiv.textContent = `+${amount} km/h`;
+            boostDiv.style.animation = 'none';
+            setTimeout(() => {
+                boostDiv.style.animation = 'popUp 1.5s ease-out';
+            }, 10);
+        }
+
+        function drawRoad() {
+            // Φόντο - ουρανός με gradient
+            const skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            skyGradient.addColorStop(0, '#87CEEB');
+            skyGradient.addColorStop(1, '#98D8E8');
+            ctx.fillStyle = skyGradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Χλοοτάπητας με gradient
+            const grassGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            grassGradient.addColorStop(0, '#2ecc71');
+            grassGradient.addColorStop(1, '#27ae60');
+            ctx.fillStyle = grassGradient;
+            ctx.fillRect(0, 0, 100, canvas.height);
+            ctx.fillRect(500, 0, 100, canvas.height);
+            
+            // Άκρες δρόμου (πεζοδρόμιο)
+            ctx.fillStyle = '#95a5a6';
+            ctx.fillRect(95, 0, 10, canvas.height);
+            ctx.fillRect(495, 0, 10, canvas.height);
+            
+            // Δρόμος με gradient
+            const roadGradient = ctx.createLinearGradient(100, 0, 500, 0);
+            roadGradient.addColorStop(0, '#2c3e50');
+            roadGradient.addColorStop(0.5, '#34495e');
+            roadGradient.addColorStop(1, '#2c3e50');
+            ctx.fillStyle = roadGradient;
+            ctx.fillRect(105, 0, 390, canvas.height);
+            
+            // Σκιές στις άκρες του δρόμου
+            ctx.fillStyle = 'rgba(0,0,0,0.2)';
+            ctx.fillRect(105, 0, 20, canvas.height);
+            ctx.fillRect(475, 0, 20, canvas.height);
+            
+            // Γραμμές δρόμου με κίνηση
+            ctx.strokeStyle = '#f39c12';
+            ctx.lineWidth = 5;
+            ctx.setLineDash([30, 20]);
+            ctx.shadowBlur = 5;
+            ctx.shadowColor = 'rgba(243, 156, 18, 0.5)';
+            
+            for (let i = 0; i < 2; i++) {
+                ctx.beginPath();
+                ctx.moveTo(225 + i * 125, -roadOffset);
+                ctx.lineTo(225 + i * 125, canvas.height - roadOffset);
+                ctx.stroke();
+            }
+            
+            ctx.setLineDash([]);
+            ctx.shadowBlur = 0;
+            
+            // Θάμνοι αριστερά
+            bushes.forEach(bush => {
+                if (bush.side === 'left') {
+                    // Σκιά θάμνου
+                    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+                    ctx.beginPath();
+                    ctx.ellipse(bush.x + 5, bush.y + bush.size + 5, bush.size, bush.size * 0.3, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Θάμνος με gradient
+                    const bushGradient = ctx.createRadialGradient(bush.x, bush.y - bush.size/4, bush.size/4, bush.x, bush.y, bush.size);
+                    bushGradient.addColorStop(0, '#2ecc71');
+                    bushGradient.addColorStop(1, '#27ae60');
+                    ctx.fillStyle = bushGradient;
+                    ctx.beginPath();
+                    ctx.arc(bush.x, bush.y, bush.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.fillStyle = '#229954';
+                    ctx.beginPath();
+                    ctx.arc(bush.x - bush.size/3, bush.y, bush.size * 0.7, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.arc(bush.x + bush.size/3, bush.y, bush.size * 0.7, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Highlights
+                    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                    ctx.beginPath();
+                    ctx.arc(bush.x - bush.size/5, bush.y - bush.size/5, bush.size * 0.3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
+            
+            // Θάμνοι δεξιά
+            bushes.forEach(bush => {
+                if (bush.side === 'right') {
+                    // Σκιά θάμνου
+                    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+                    ctx.beginPath();
+                    ctx.ellipse(bush.x + 5, bush.y + bush.size + 5, bush.size, bush.size * 0.3, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Θάμνος με gradient
+                    const bushGradient = ctx.createRadialGradient(bush.x, bush.y - bush.size/4, bush.size/4, bush.x, bush.y, bush.size);
+                    bushGradient.addColorStop(0, '#2ecc71');
+                    bushGradient.addColorStop(1, '#27ae60');
+                    ctx.fillStyle = bushGradient;
+                    ctx.beginPath();
+                    ctx.arc(bush.x, bush.y, bush.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.fillStyle = '#229954';
+                    ctx.beginPath();
+                    ctx.arc(bush.x - bush.size/3, bush.y, bush.size * 0.7, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.arc(bush.x + bush.size/3, bush.y, bush.size * 0.7, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Highlights
+                    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                    ctx.beginPath();
+                    ctx.arc(bush.x - bush.size/5, bush.y - bush.size/5, bush.size * 0.3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
+        }
+
+        function drawCar(x, y, width, height, color) {
+            // Κύριο σώμα αυτοκινήτου με gradient
+            const bodyGradient = ctx.createLinearGradient(x, y, x + width, y);
+            bodyGradient.addColorStop(0, color);
+            bodyGradient.addColorStop(0.5, color);
+            bodyGradient.addColorStop(1, shadeColor(color, -20));
+            ctx.fillStyle = bodyGradient;
+            ctx.fillRect(x + 5, y + 20, width - 10, height - 30);
+            
+            // Οροφή (cabin) με gradient
+            const cabinGradient = ctx.createLinearGradient(x, y + 25, x, y + 50);
+            cabinGradient.addColorStop(0, shadeColor(color, -30));
+            cabinGradient.addColorStop(1, color);
+            ctx.fillStyle = cabinGradient;
+            ctx.fillRect(x + 8, y + 25, width - 16, 25);
+            
+            // Παρμπρίζ μπροστά με reflection
+            const windshieldGradient = ctx.createLinearGradient(x, y + 15, x, y + 25);
+            windshieldGradient.addColorStop(0, '#4a5f7f');
+            windshieldGradient.addColorStop(1, '#1a1a2e');
+            ctx.fillStyle = windshieldGradient;
+            ctx.beginPath();
+            ctx.moveTo(x + 8, y + 25);
+            ctx.lineTo(x + 12, y + 15);
+            ctx.lineTo(x + width - 12, y + 15);
+            ctx.lineTo(x + width - 8, y + 25);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Reflection στο παρμπρίζ
+            ctx.fillStyle = 'rgba(135, 206, 235, 0.3)';
+            ctx.beginPath();
+            ctx.moveTo(x + 8, y + 25);
+            ctx.lineTo(x + 12, y + 15);
+            ctx.lineTo(x + width - 12, y + 15);
+            ctx.lineTo(x + 8, y + 25);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Παρμπρίζ πίσω
+            ctx.fillStyle = windshieldGradient;
+            ctx.beginPath();
+            ctx.moveTo(x + 8, y + 50);
+            ctx.lineTo(x + 12, y + 60);
+            ctx.lineTo(x + width - 12, y + 60);
+            ctx.lineTo(x + width - 8, y + 50);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Προφυλακτήρας μπροστά
+            ctx.fillStyle = '#2c3e50';
+            ctx.fillRect(x + 5, y + 10, width - 10, 8);
+            ctx.fillStyle = 'rgba(255,255,255,0.2)';
+            ctx.fillRect(x + 5, y + 10, width - 10, 2);
+            
+            // Προφυλακτήρας πίσω
+            ctx.fillStyle = '#2c3e50';
+            ctx.fillRect(x + 5, y + height - 15, width - 10, 8);
+            
+            // Φώτα μπροστά με glow
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = '#f1c40f';
+            ctx.fillStyle = '#f1c40f';
+            ctx.fillRect(x + 8, y + 12, 8, 4);
+            ctx.fillRect(x + width - 16, y + 12, 8, 4);
+            ctx.shadowBlur = 0;
+            
+            // Φώτα πίσω με glow
+            ctx.shadowBlur = 8;
+            ctx.shadowColor = '#e74c3c';
+            ctx.fillStyle = '#e74c3c';
+            ctx.fillRect(x + 8, y + height - 12, 8, 4);
+            ctx.fillRect(x + width - 16, y + height - 12, 8, 4);
+            ctx.shadowBlur = 0;
+            
+            // Ρόδες με gradient
+            const wheelGradient = ctx.createRadialGradient(x, y + 27, 1, x, y + 27, 4);
+            wheelGradient.addColorStop(0, '#4a4a4a');
+            wheelGradient.addColorStop(1, '#1a1a1a');
+            ctx.fillStyle = wheelGradient;
+            ctx.fillRect(x - 2, y + 20, 6, 15);
+            ctx.fillRect(x + width - 4, y + 20, 6, 15);
+            ctx.fillRect(x - 2, y + height - 35, 6, 15);
+            ctx.fillRect(x + width - 4, y + height - 35, 6, 15);
+            
+            // Ζάντες
+            ctx.fillStyle = '#7f8c8d';
+            ctx.fillRect(x, y + 23, 4, 9);
+            ctx.fillRect(x + width - 4, y + 23, 4, 9);
+            ctx.fillRect(x, y + height - 32, 4, 9);
+            ctx.fillRect(x + width - 4, y + height - 32, 4, 9);
+            
+            // Shine effect
+            ctx.fillStyle = 'rgba(255,255,255,0.3)';
+            ctx.fillRect(x + 8, y + 22, width - 16, 3);
+        }
+        
+        // Helper function για να κάνουμε σκούρα/ανοιχτά χρώματα
+        function shadeColor(color, percent) {
+            const num = parseInt(color.replace("#",""), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = (num >> 16) + amt;
+            const G = (num >> 8 & 0x00FF) + amt;
+            const B = (num & 0x0000FF) + amt;
+            return "#" + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 +
+                (G<255?G<1?0:G:255)*0x100 + (B<255?B<1?0:B:255))
+                .toString(16).slice(1);
+        }
+
+        function drawTruck(x, y, width, height, color) {
+            // Καμπίνα φορτηγού
+            const cabinGradient = ctx.createLinearGradient(x, y, x + width, y);
+            cabinGradient.addColorStop(0, color);
+            cabinGradient.addColorStop(1, shadeColor(color, -20));
+            ctx.fillStyle = cabinGradient;
+            ctx.fillRect(x + 5, y + 10, width - 10, 30);
+            
+            // Παρμπρίζ
+            ctx.fillStyle = '#1a1a2e';
+            ctx.fillRect(x + 8, y + 15, width - 16, 15);
+            
+            // Κοντέινερ πίσω
+            ctx.fillStyle = shadeColor(color, -30);
+            ctx.fillRect(x + 5, y + 42, width - 10, height - 50);
+            
+            // Γραμμές στο κοντέινερ
+            ctx.strokeStyle = shadeColor(color, -40);
+            ctx.lineWidth = 2;
+            for (let i = 1; i < 4; i++) {
+                ctx.beginPath();
+                ctx.moveTo(x + 5, y + 42 + i * 15);
+                ctx.lineTo(x + width - 5, y + 42 + i * 15);
+                ctx.stroke();
+            }
+            
+            // Φώτα
+            ctx.fillStyle = '#f1c40f';
+            ctx.fillRect(x + 8, y + 12, 6, 3);
+            ctx.fillRect(x + width - 14, y + 12, 6, 3);
+            
+            // Ρόδες
+            ctx.fillStyle = '#1a1a1a';
+            ctx.fillRect(x - 2, y + 25, 6, 12);
+            ctx.fillRect(x + width - 4, y + 25, 6, 12);
+            ctx.fillRect(x - 2, y + height - 15, 6, 12);
+            ctx.fillRect(x + width - 4, y + height - 15, 6, 12);
+        }
+
+        function drawBus(x, y, width, height, color) {
+            // Σώμα λεωφορείου
+            const busGradient = ctx.createLinearGradient(x, y, x + width, y);
+            busGradient.addColorStop(0, color);
+            busGradient.addColorStop(1, shadeColor(color, -20));
+            ctx.fillStyle = busGradient;
+            ctx.fillRect(x + 5, y + 15, width - 10, height - 25);
+            
+            // Παράθυρα
+            ctx.fillStyle = '#4a5f7f';
+            const windowHeight = 12;
+            const windowSpacing = 18;
+            for (let i = 0; i < Math.floor((height - 30) / windowSpacing); i++) {
+                ctx.fillRect(x + 8, y + 20 + i * windowSpacing, width - 16, windowHeight);
+            }
+            
+            // Ρίγα λεωφορείου
+            ctx.fillStyle = shadeColor(color, 30);
+            ctx.fillRect(x + 5, y + height/2, width - 10, 4);
+            
+            // Φώτα μπροστά
+            ctx.fillStyle = '#f1c40f';
+            ctx.fillRect(x + 8, y + 12, 8, 4);
+            ctx.fillRect(x + width - 16, y + 12, 8, 4);
+            
+            // Φώτα πίσω
+            ctx.fillStyle = '#e74c3c';
+            ctx.fillRect(x + 8, y + height - 12, 8, 4);
+            ctx.fillRect(x + width - 16, y + height - 12, 8, 4);
+            
+            // Ρόδες
+            ctx.fillStyle = '#1a1a1a';
+            ctx.fillRect(x - 2, y + 20, 6, 12);
+            ctx.fillRect(x + width - 4, y + 20, 6, 12);
+            ctx.fillRect(x - 2, y + height - 20, 6, 12);
+            ctx.fillRect(x + width - 4, y + height - 20, 6, 12);
+        }
+
+        function spawnObstacle() {
+            if (Math.random() < 0.008) {
+                // Βρίσκουμε ποιες λωρίδες έχουν ήδη αυτοκίνητα κοντά
+                const occupiedLanes = [];
+                obstacles.forEach(obs => {
+                    if (obs.y < 300) {
+                        const laneIndex = lanePositions.indexOf(obs.x);
+                        if (!occupiedLanes.includes(laneIndex)) {
+                            occupiedLanes.push(laneIndex);
+                        }
+                    }
+                });
+                
+                if (occupiedLanes.length >= 2) {
+                    return;
+                }
+                
+                const availableLanes = [0, 1, 2].filter(lane => !occupiedLanes.includes(lane));
+                const lane = availableLanes[Math.floor(Math.random() * availableLanes.length)];
+                
+                // Διαφορετικοί τύποι οχημάτων
+                const vehicleTypes = [
+                    { type: 'small', width: 40, height: 60, colors: ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#e67e22', '#1abc9c'] },
+                    { type: 'car', width: 50, height: 80, colors: ['#c0392b', '#2980b9', '#27ae60', '#d68910', '#8e44ad', '#d35400', '#16a085'] },
+                    { type: 'large', width: 55, height: 90, colors: ['#922b21', '#1f618d', '#1e8449', '#b9770e', '#6c3483'] },
+                    { type: 'truck', width: 52, height: 100, colors: ['#7f8c8d', '#34495e', '#95a5a6'] },
+                    { type: 'bus', width: 50, height: 110, colors: ['#f39c12', '#e67e22', '#d35400'] }
+                ];
+                
+                // Διαλέγουμε τυχαίο τύπο οχήματος
+                const vehicleType = vehicleTypes[Math.floor(Math.random() * vehicleTypes.length)];
+                const color = vehicleType.colors[Math.floor(Math.random() * vehicleType.colors.length)];
+                const speedMultiplier = 0.7 + Math.random() * 0.6;
+                
+                obstacles.push({
+                    x: lanePositions[lane],
+                    y: -120,
+                    width: vehicleType.width,
+                    height: vehicleType.height,
+                    color: color,
+                    type: vehicleType.type,
+                    speedMultiplier: speedMultiplier
+                });
+            }
+        }
+
+        function checkCollision() {
+            for (let obs of obstacles) {
+                // Αυξημένο margin για ακόμα πιο ακριβές collision
+                const margin = 12;
+                if (player.x + margin < obs.x + obs.width - margin &&
+                    player.x + player.width - margin > obs.x + margin &&
+                    player.y + margin < obs.y + obs.height - margin &&
+                    player.y + player.height - margin > obs.y + margin) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function gameLoop() {
+            if (!gameRunning) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Ενημέρωση offset για κίνηση δρόμου
+            roadOffset += speed / 10;
+            if (roadOffset > 50) roadOffset = 0;
+            
+            // Κίνηση θάμνων
+            bushes.forEach(bush => {
+                bush.y += speed / 8;
+                if (bush.y > canvas.height + 50) {
+                    bush.y = -50;
+                    bush.x = bush.side === 'left' ? 40 + Math.random() * 40 : 520 + Math.random() * 40;
+                    bush.size = 20 + Math.random() * 15;
+                }
+            });
+            
+            drawRoad();
+
+            distance += speed / 3.6 / 60;
+            
+            // Check for speed increase
+            const settings = difficultySettings[difficulty];
+            if (Math.floor(distance / settings.increaseInterval) > lastSpeedIncrease) {
+                lastSpeedIncrease = Math.floor(distance / settings.increaseInterval);
+                speed += settings.speedIncrease;
+                showSpeedBoost(settings.speedIncrease);
+            }
+            
+            currentTime = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(currentTime / 60);
+            const seconds = currentTime % 60;
+            document.getElementById('time').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            document.getElementById('speed').textContent = Math.round(speed);
+            document.getElementById('distance').textContent = Math.round(distance);
+
+            if (keys['ArrowLeft'] && player.lane > 0) {
+                player.lane--;
+                player.x = lanePositions[player.lane];
+                keys['ArrowLeft'] = false;
+            }
+            if (keys['ArrowRight'] && player.lane < 2) {
+                player.lane++;
+                player.x = lanePositions[player.lane];
+                keys['ArrowRight'] = false;
+            }
+
+            drawCar(player.x, player.y, player.width, player.height, carColor);
+
+            spawnObstacle();
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                // Κάθε αυτοκίνητο κινείται με τη δική του ταχύτητα
+                obstacles[i].y += (speed / 8) * obstacles[i].speedMultiplier;
+                
+                // Ζωγραφίζουμε ανάλογα με τον τύπο
+                if (obstacles[i].type === 'truck') {
+                    drawTruck(obstacles[i].x, obstacles[i].y, obstacles[i].width, obstacles[i].height, obstacles[i].color);
+                } else if (obstacles[i].type === 'bus') {
+                    drawBus(obstacles[i].x, obstacles[i].y, obstacles[i].width, obstacles[i].height, obstacles[i].color);
+                } else {
+                    drawCar(obstacles[i].x, obstacles[i].y, obstacles[i].width, obstacles[i].height, obstacles[i].color);
+                }
+                
+                if (obstacles[i].y > canvas.height) {
+                    obstacles.splice(i, 1);
+                }
+            }
+
+            if (checkCollision()) {
+                gameRunning = false;
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                }
+                gameOverDiv.style.display = 'block';
+                document.getElementById('finalDistance').textContent = Math.round(distance);
+                document.getElementById('finalTime').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                return;
+            }
+
+            animationFrameId = requestAnimationFrame(gameLoop);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && !gameRunning && gameOverDiv.style.display === 'block') {
+                startGame();
+            }
+            if (e.code === 'ControlLeft') {
+                if (gameRunning || gameOverDiv.style.display === 'block') {
+                    gameRunning = false;
+                    gameOverDiv.style.display = 'none';
+                    startGame();
+                }
+            }
+            if (e.code === 'Tab') {
+                e.preventDefault();
+                gameRunning = false;
+                gameScreen.style.display = 'none';
+                startScreen.style.display = 'block';
+                gameOverDiv.style.display = 'none';
+            }
+            keys[e.key] = true;
+        });
+
+        document.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+    </script>
+</body>
+</html>
